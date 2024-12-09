@@ -3,30 +3,15 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    old-rust-analyzer-nixpkgs.url = "github:nixos/nixpkgs/34a626458d686f1b58139620a8b2793e9e123bba";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        rustAnalyzer = pkgs.stdenv.mkDerivation {
-          pname = "rust-analyzer";
-          version = "2024-09-30"; # Replace with your desired version tag
-          src = pkgs.fetchurl {
-            url = "https://github.com/rust-lang/rust-analyzer/releases/download/2024-09-30/rust-analyzer-x86_64-unknown-linux-gnu.gz";
-            sha256 = "uSITGS/4zgk2M2nqpAe1FPd08MskvI6lc0LJIoVRuSo="; # Replace with the correct hash
-          };
-          unpackPhase = '' # Custom unpack phase
-            mkdir $out
-            gunzip -c $src > $out/rust-analyzer
-          '';
-          installPhase = '' # Move binary to standard bin location
-            mkdir -p $out/bin
-            mv $out/rust-analyzer $out/bin/rust-analyzer
-            chmod +x $out/bin/rust-analyzer
-          '';
-        };
+        old-rust-analyzer-pkgs = inputs.old-rust-analyzer-nixpkgs.legacyPackages.${system};
       in
       {
         devShells = {
@@ -35,7 +20,7 @@
               cargo
               rustc
               rustfmt
-              rustAnalyzer
+              old-rust-analyzer-pkgs.rust-analyzer
               taplo
             ];
           };
