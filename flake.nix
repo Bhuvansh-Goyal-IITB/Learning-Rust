@@ -18,7 +18,7 @@
                   owner = "rust-lang";
                   repo = "rust-analyzer";
                   rev = "822644d97d7f64e1bdff25b1d636e366a29facc4";
-                  sha256 = "sha256-iJTCG7vtECll27sxDElL4SuIY/kRhamJf0DDYCW6fb4";
+                  sha256 = "iJTCG7vtECll27sxDElL4SuIY/kRhamJf0DDYCW6fb4=";
                 };
               });
             })
