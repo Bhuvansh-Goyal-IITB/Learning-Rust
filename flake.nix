@@ -9,20 +9,19 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs {
-          system = system;
-          overlays = [
-            (self: super: {
-              rust-analyzer = super.rust-analyzer.overrideAttrs (old: {
-                src = super.fetchFromGitHub {
-                  owner = "rust-lang";
-                  repo = "rust-analyzer";
-                  rev = "822644d97d7f64e1bdff25b1d636e366a29facc4";
-                  sha256 = "iJTCG7vtECll27sxDElL4SuIY/kRhamJf0DDYCW6fb4=";
-                };
-              });
-            })
-          ];
+        pkgs = nixpkgs.legacyPackages.${system};
+        rustAnalyzer = pkgs.stdenv.mkDerivation {
+          pname = "rust-analyzer";
+          version = "2024-09-30"; # Replace with your desired version tag
+          src = pkgs.fetchurl {
+            url = "https://github.com/rust-lang/rust-analyzer/releases/download/2024-09-30/rust-analyzer-x86_64-unknown-linux-gnu.gz";
+            sha256 = ""; # Replace with the correct hash
+          };
+          installPhase = ''
+            mkdir -p $out/bin
+            gunzip -c $src > $out/bin/rust-analyzer
+            chmod +x $out/bin/rust-analyzer
+          '';
         };
       in
       {
@@ -32,7 +31,7 @@
               cargo
               rustc
               rustfmt
-              rust-analyzer
+              rustAnalyzer
               taplo
             ];
           };
